@@ -1,28 +1,28 @@
-name: Build and Push Docker Image to GHCR
-
-on:
-  push:
-    branches:
-      - main  # Hanya berjalan saat ada push ke branch `main`
-
+name: Build and Push Image
+run-name: Build and Push Image
+on: [push]
 jobs:
   build-push-image:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
+      - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        run: |
-          echo "${{ secrets.TOKEN_GITHUB }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+      - name: Build image
+        run: docker build -t imageku .
 
-      - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.actor }}/imageku:latest .
-
-      - name: List Docker images
+      - name: List image
         run: docker images
 
-      - name: Push Docker image to GHCR
-        run: docker push ghcr.io/${{ github.actor }}/imageku:latest
+      - name: Cek isi image
+        run: docker history imageku:latest
+
+      - name: Login to GitHub Registry
+        run: echo ${{ secrets.TOKEN_DVLZ }} | docker login ghcr.io -u develz12 --password-stdin
+
+      - name: Tag image
+        run: docker tag imageku ghcr.io/develz12/imageku:latest
+
+      - name: Push Image
+        run: docker push ghcr.io/develz12/imageku:latest
 
